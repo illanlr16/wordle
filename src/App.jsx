@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Casilla from './components/Casilla.jsx'
 
 const FILAS = 6
-const SOLUCION = ['PERRO', 'MOVIL', 'DESIN', 'POCHO']
+const SOLUCION = ['PERRO', 'MOVIL', 'DESIN', 'POCHO', 'MOCHI']
 const COLUMNAS = 5
 
 // Crea un tablero vacío: 6 filas de 5 letras en blanco
@@ -34,6 +34,8 @@ function App() {
   const [palabra, setSolucion] = useState(solucionAleatoria)
   const [intentos, setIntentos] = useState(tableroVacio())
   const [filaActual, setFilaActual] = useState(0)
+  // Declaramos el aviso por si faltan letras
+  const [aviso, setAviso] = useState('')
 
   // El último intento comprobado, como texto: 'PERRO'
   const ultimo = filaActual > 0 ? intentos[filaActual - 1].join('') : ''
@@ -75,9 +77,15 @@ function App() {
     evento.preventDefault()
     if (terminada) return
     // No se puede comprobar una fila incompleta
-    if (intentos[filaActual].includes('')) return
+    if (intentos[filaActual].includes('')){
+      // Añadimos texto al aviso para indicar que faltan letras
+      setAviso('Faltan letras')
+      return
+    }
 
     setFilaActual(filaActual + 1)
+    // Si no faltan letras quitamos el aviso (en caso de que hubieran faltado previamente)
+    setAviso('')
   }
 
   return (
@@ -99,6 +107,10 @@ function App() {
           </div>
         ))}
       </div>
+
+      {/*Añadimos el aviso por pantalla*/}
+      {aviso && <p role="alert">{aviso}</p>}
+
       {terminada ? (
         <>
           <p className="mensaje" role="status">
