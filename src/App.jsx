@@ -80,9 +80,10 @@ function App() {
       {terminada ? (
         <p className="mensaje" role="status">
           {ganada
-            ? '¡Enhorabuena, has acertado!'
+            ? '¡Enhorabuena, has acertado!' 
             : `La palabra era ${SOLUCION}`}
-        </p>  
+        </p>
+          
       ) : (
         <button className="boton" type="submit">
           Comprobar
