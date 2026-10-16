@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import Casilla from './components/Casilla.jsx'
 
 const FILAS = 6
-const SOLUCION = 'PERRO'
-const COLUMNAS = SOLUCION.length
+const SOLUCION = ['PERRO', 'MOVIL', 'DESIN', 'POCHO']
+const COLUMNAS = 5
 
 // Crea un tablero vacío: 6 filas de 5 letras en blanco
 function tableroVacio() {
@@ -14,27 +14,41 @@ function tableroVacio() {
   return tablero
 }
 
+// Añadimos una función para generar un número aleatorio y que la palabra del array sea aleatoria
+function solucionAleatoria(){
+  let i = Math.floor(Math.random() * SOLUCION.length)
+  return SOLUCION[i]
+}
+
 // Decide el color de una letra ya comprobada
-function estadoDe(letra, columna) {
-  if (SOLUCION[columna] === letra) return 'correcta'
-  if (SOLUCION.includes(letra)) return 'presente'
+// Añadimos la palabra de la solución al estado
+function estadoDe(letra, columna, palabra) {
+  if (palabra[columna] === letra) return 'correcta'
+  if (palabra.includes(letra)) return 'presente'
   return 'ausente'
 }
 
 
 function App() {
+  // Declaramos la palabra
+  const [palabra, setSolucion] = useState(solucionAleatoria)
   const [intentos, setIntentos] = useState(tableroVacio())
   const [filaActual, setFilaActual] = useState(0)
 
   // El último intento comprobado, como texto: 'PERRO'
   const ultimo = filaActual > 0 ? intentos[filaActual - 1].join('') : ''
-  const ganada = ultimo === SOLUCION
+
+  // Comparamos con la palabra
+  const ganada = ultimo === palabra
   const terminada = ganada || filaActual === FILAS
 
   // Funcion para vaciar el tablero mediante el botón "Volver a jugar", resetear la fila y los intentos
   function vaciarTablero(){
     setIntentos(tableroVacio())
     setFilaActual(0)
+
+    // le añado el setter de la solucion aleatoria de la segunda mejora
+    setSolucion(solucionAleatoria())
   }
 
   useEffect(() => {
@@ -76,7 +90,8 @@ function App() {
               <Casilla
                 key={c}
                 letra={letra}
-                estado={f < filaActual ? estadoDe(letra, c) : ''}
+                // le pasamos palabra a estadoDe
+                estado={f < filaActual ? estadoDe(letra, c, palabra) : ''}
                 activa={f === filaActual && !terminada}
                 onCambio={(evento) => cambiarLetra(f, c, evento)}
               />
@@ -85,13 +100,17 @@ function App() {
         ))}
       </div>
       {terminada ? (
-        <p className="mensaje" role="status">
-          {ganada
-            ? '¡Enhorabuena, has acertado!' 
-            : `La palabra era ${SOLUCION}`}
-        </p>,
-        // botón para vaciar el tablero
-        <button onClick={vaciarTablero} className="boton" type="button">Volver a jugar</button>
+        <>
+          <p className="mensaje" role="status">
+            {ganada
+              ? '¡Enhorabuena, has acertado!' 
+              // Si se falla devuelve la palabra que era
+              : `La palabra era ${palabra}`}
+          </p>
+
+          {/*botón para vaciar el tablero y volver a jugá*/}
+          <button onClick={vaciarTablero} className="boton" type="button">Volver a jugar</button>
+        </>
       ) : (
         <button className="boton" type="submit">
           Comprobar
