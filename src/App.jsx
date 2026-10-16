@@ -21,6 +21,7 @@ function estadoDe(letra, columna) {
   return 'ausente'
 }
 
+
 function App() {
   const [intentos, setIntentos] = useState(tableroVacio())
   const [filaActual, setFilaActual] = useState(0)
@@ -29,6 +30,12 @@ function App() {
   const ultimo = filaActual > 0 ? intentos[filaActual - 1].join('') : ''
   const ganada = ultimo === SOLUCION
   const terminada = ganada || filaActual === FILAS
+
+  // Funcion para vaciar el tablero mediante el botón "Volver a jugar", resetear la fila y los intentos
+  function vaciarTablero(){
+    setIntentos(tableroVacio())
+    setFilaActual(0)
+  }
 
   useEffect(() => {
     // Lleva el cursor a la primera casilla en la que se puede escribir
@@ -82,8 +89,9 @@ function App() {
           {ganada
             ? '¡Enhorabuena, has acertado!' 
             : `La palabra era ${SOLUCION}`}
-        </p>
-          
+        </p>,
+        // botón para vaciar el tablero
+        <button onClick={vaciarTablero} className="boton" type="button">Volver a jugar</button>
       ) : (
         <button className="boton" type="submit">
           Comprobar
